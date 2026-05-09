@@ -1,0 +1,83 @@
+@page "/login"
+@rendermode InteractiveServer
+
+<PageTitle>Login</PageTitle>
+
+<h1>Login</h1>
+
+<EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <p>
+        <label class="fw-bold">Email</label><br />
+        <InputText type="email" @bind-Value="_model.Email" class="form-control w-75" autocomplete="username" />
+        <ValidationMessage For="@(() => _model.Email)" />
+    </p>
+    <p>
+        <label class="fw-bold">Password</label><br />
+        <InputText type="password" @bind-Value="_model.Password" class="form-control w-75" autocomplete="current-password" />
+        <ValidationMessage For="@(() => _model.Password)" />
+    </p>
+
+    <button type="submit" class="btn btn-primary" disabled="@_busy">Sign in</button>
+</EditForm>
+
+@if (_response is not null)
+{
+    <div class="mt-3 alert alert-success">
+        <strong>Signed in.</strong><br />
+        @_response.FirstName @_response.LastName<br />
+        @_response.Email (id @_response.UserId)
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(_error))
+{
+    <p class="text-danger mt-3">@_error</p>
+}
+
+@inject ISender Mediator
+
+@code {
+    private readonly LoginFormModel _model = new();
+
+    private bool _busy;
+
+    private string? _error;
+
+    private LoginResponse? _response;
+
+    private async Task OnSubmitAsync()
+    {
+        _busy = true;
+        _error = null;
+        _response = null;
+
+        LoginUserRequest request =
+            new() { Email = _model.Email.Trim(), Password = _model.Password };
+
+        Result<LoginResponse> result = await Mediator.Send(new LoginUserCommand(request));
+
+        if (result.IsFailure)
+        {
+            _error = result.Error!.Message;
+        }
+        else
+        {
+            _response = result.Value;
+        }
+
+        _busy = false;
+    }
+
+    private sealed class LoginFormModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.EmailAddress]
+        public string Email { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.Required]
+        public string Password { get; set; } = "";
+    }
+}

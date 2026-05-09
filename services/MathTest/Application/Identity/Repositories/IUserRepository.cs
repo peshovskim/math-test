@@ -1,0 +1,10 @@
+using MathTest.Domain.Users;
+
+namespace MathTest.Application.Identity.Repositories;
+
+public interface IUserRepository
+{
+    Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+
+    Task AddAsync(User user, CancellationToken cancellationToken = default);
+}

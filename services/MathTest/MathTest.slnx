@@ -1,0 +1,19 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Database/">
+    <Project Path="../Database/MathTest.Database/MathTest.Database.sqlproj" Type="42ea0dbd-9cf1-443e-919e-be9c484e4577" Id="8f3a92c1-4d5e-4b1a-9c0f-726d4e81a102">
+      <Platform Project="AnyCPU" />
+      <Deploy />
+    </Project>
+  </Folder>
+  <Project Path="Application/Application.csproj" />
+  <Project Path="Domain/Domain.csproj" />
+  <Project Path="Infrastructure/Infrastructure.csproj" />
+  <Project Path="MathEngine/MathEngine.csproj" />
+  <Project Path="SharedKernel/SharedKernel.csproj" Id="2b30165a-7719-4b38-8b01-4a50784e5a14" />
+  <Project Path="MathTest.Web/MathTest.Web.csproj" />
+</Solution>

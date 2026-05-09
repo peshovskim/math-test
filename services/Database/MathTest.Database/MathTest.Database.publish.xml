@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseName>MathTestDb</TargetDatabaseName>
+    <DeployScriptFileName>MathTest.Database.sql</DeployScriptFileName>
+    <ProfileVersionNumber>1</ProfileVersionNumber>
+    <BlockWhenDriftDetected>False</BlockWhenDriftDetected>
+    <BlockOnPossibleDataLoss>True</BlockOnPossibleDataLoss>
+    <RegisterDataTierApplication>False</RegisterDataTierApplication>
+    <DropObjectsNotInSource>False</DropObjectsNotInSource>
+    <IgnoreColumnOrder>True</IgnoreColumnOrder>
+    <CreateNewDatabase>True</CreateNewDatabase>
+    <TargetConnectionString>Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MathTestDb;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=True;Encrypt=False;TrustServerCertificate=True</TargetConnectionString>
+  </PropertyGroup>
+</Project>

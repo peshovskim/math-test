@@ -1,0 +1,91 @@
+@page "/register"
+@rendermode InteractiveServer
+
+<PageTitle>Register</PageTitle>
+
+<h1>Register</h1>
+
+<EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <p>
+        <label class="fw-bold">First name</label><br />
+        <InputText @bind-Value="_model.FirstName" class="form-control w-75" autocomplete="given-name" />
+        <ValidationMessage For="@(() => _model.FirstName)" />
+    </p>
+    <p>
+        <label class="fw-bold">Last name</label><br />
+        <InputText @bind-Value="_model.LastName" class="form-control w-75" autocomplete="family-name" />
+        <ValidationMessage For="@(() => _model.LastName)" />
+    </p>
+    <p>
+        <label class="fw-bold">Email</label><br />
+        <InputText type="email" @bind-Value="_model.Email" class="form-control w-75" autocomplete="username" />
+        <ValidationMessage For="@(() => _model.Email)" />
+    </p>
+    <p>
+        <label class="fw-bold">Password</label><br />
+        <InputText type="password" @bind-Value="_model.Password" class="form-control w-75" autocomplete="new-password" />
+        <ValidationMessage For="@(() => _model.Password)" />
+    </p>
+
+    <button type="submit" class="btn btn-primary" disabled="@_busy">Create account</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(_message))
+{
+    <p class="@(_success ? "text-success" : "text-danger") mt-3">@_message</p>
+}
+
+@inject ISender Mediator
+
+@code {
+    private readonly RegisterFormModel _model = new();
+
+    private bool _busy;
+
+    private string? _message;
+
+    private bool _success;
+
+    private async Task OnSubmitAsync()
+    {
+        _busy = true;
+        _message = null;
+
+        RegisterUserRequest request = new()
+        {
+            FirstName = _model.FirstName.Trim(),
+            LastName = _model.LastName.Trim(),
+            Email = _model.Email.Trim(),
+            Password = _model.Password,
+        };
+
+        Result result = await Mediator.Send(new RegisterUserCommand(request));
+
+        _success = result.IsSuccess;
+        _message = result.IsSuccess ? "Registration successful. You can sign in." : result.Error!.Message;
+
+        _busy = false;
+    }
+
+    private sealed class RegisterFormModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.MaxLength(100)]
+        public string FirstName { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.MaxLength(100)]
+        public string LastName { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.EmailAddress]
+        public string Email { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.MinLength(8)]
+        public string Password { get; set; } = "";
+    }
+}
