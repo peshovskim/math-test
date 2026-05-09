@@ -1,0 +1,41 @@
+## Build outputs (.NET / MSBuild)
+**/bin/
+**/obj/
+**/out/
+**/artifacts/
+**/TestResults/
+
+## Visual Studio
+.vs/
+*.rsuser
+*.suo
+*.user
+*.userosscache
+
+## Rider / JetBrains
+.idea/
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+*.sln.iml
+
+## NuGet — avoid committing restored packages folders
+**/packages/
+
+## Sensitive / machine-local config
+**/appsettings.*.local.json
+**/secrets.json
+*.pfx
+
+## SQL publish — frequently machine-specific URLs or credentials
+*.publish.settings
+
+## Logs & OS noise
+**/logs/
+*.log
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+## Editor tooling
+.history/
