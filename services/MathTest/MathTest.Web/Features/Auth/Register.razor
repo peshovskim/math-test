@@ -29,6 +29,11 @@
         <InputText type="password" @bind-Value="_model.Password" class="form-control w-75" autocomplete="new-password" />
         <ValidationMessage For="@(() => _model.Password)" />
     </p>
+    <p>
+        <label class="d-flex gap-2 align-items-center fw-bold">
+            <InputCheckbox @bind-Value="_model.RegisterAsTeacher" /> I&apos;m a teacher
+        </label>
+    </p>
 
     <button type="submit" class="btn btn-primary" disabled="@_busy">Create account</button>
 </EditForm>
@@ -68,6 +73,7 @@
                 LastName = _model.LastName.Trim(),
                 Email = _model.Email.Trim(),
                 Password = _model.Password,
+                RegisterAsTeacher = _model.RegisterAsTeacher,
             };
 
             using HttpResponseMessage response =
@@ -112,5 +118,7 @@
         [System.ComponentModel.DataAnnotations.Required]
         [System.ComponentModel.DataAnnotations.MinLength(8)]
         public string Password { get; set; } = "";
+
+        public bool RegisterAsTeacher { get; set; }
     }
 }

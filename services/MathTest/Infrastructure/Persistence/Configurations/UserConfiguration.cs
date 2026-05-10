@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MathTest.Domain.Users;
+using MathTest.Domain.Entities.Users;
 
 namespace MathTest.Infrastructure.Persistence.Configurations;
 

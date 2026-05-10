@@ -3,7 +3,7 @@ using MathTest.Application.Identity.Repositories;
 using MathTest.Application.Identity.Requests;
 using MathTest.Application.Identity.Responses;
 using MathTest.Application.Identity.Interfaces;
-using MathTest.Domain.Users;
+using MathTest.Domain.Entities.Users;
 using SharedKernel;
 using SharedKernel.Cqrs;
 

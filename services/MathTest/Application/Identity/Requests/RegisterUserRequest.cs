@@ -19,4 +19,6 @@ public sealed class RegisterUserRequest
     [Required]
     [MinLength(8)]
     public string Password { get; init; } = string.Empty;
+
+    public bool RegisterAsTeacher { get; init; }
 }

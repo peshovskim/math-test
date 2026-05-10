@@ -3,7 +3,7 @@ using MathTest.Application.Common.Abstractions;
 using MathTest.Application.Identity.Requests;
 using MathTest.Application.Identity.Repositories;
 using MathTest.Application.Identity.Interfaces;
-using MathTest.Domain.Users;
+using MathTest.Domain.Entities.Users;
 using SharedKernel;
 using SharedKernel.Cqrs;
 
@@ -14,6 +14,7 @@ public sealed record RegisterUserCommand(RegisterUserRequest Request) : ICommand
 public sealed class RegisterUserCommandHandler(
     IPasswordHasher passwordHasher,
     IUserRepository userRepository,
+    IRoleRepository roleRepository,
     IUnitOfWork unitOfWork)
     : IRequestHandler<RegisterUserCommand, Result>
 {
@@ -38,6 +39,15 @@ public sealed class RegisterUserCommandHandler(
             return Result.Conflicted(ResultCodes.Conflict, "A user with this email already exists.");
         }
 
+        string roleName = request.RegisterAsTeacher ? RoleNames.Teacher : RoleNames.Student;
+
+        Role? role = await roleRepository.GetByNameAsync(roleName, cancellationToken);
+
+        if (role is null)
+        {
+            return Result.NotFound(ResultCodes.Validation, "Role not found");
+        }
+
         (byte[]? hash, byte[]? salt) = passwordHasher.HashPassword(request.Password);
 
         var user = new User
@@ -48,6 +58,8 @@ public sealed class RegisterUserCommandHandler(
             PasswordHash = hash,
             Salt = salt,
         };
+
+        user.UserRoles.Add(new UserRole { RoleId = role.Id });
 
         await userRepository.AddAsync(user, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

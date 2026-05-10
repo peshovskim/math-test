@@ -1,8 +1,5 @@
-namespace MathTest.Domain.Users;
+namespace MathTest.Domain.Entities.Users;
 
-/// <summary>
-/// Maps to <c>dbo.User</c>.
-/// </summary>
 public sealed class User
 {
     public int Id { get; set; }
@@ -16,4 +13,6 @@ public sealed class User
     public byte[] PasswordHash { get; set; } = [];
 
     public byte[] Salt { get; set; } = [];
+
+    public ICollection<UserRole> UserRoles { get; } = new List<UserRole>();
 }

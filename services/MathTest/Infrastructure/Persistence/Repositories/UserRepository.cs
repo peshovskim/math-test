@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MathTest.Application.Identity.Repositories;
-using MathTest.Domain.Users;
+using MathTest.Domain.Entities.Users;
 
 namespace MathTest.Infrastructure.Persistence.Repositories;
 
