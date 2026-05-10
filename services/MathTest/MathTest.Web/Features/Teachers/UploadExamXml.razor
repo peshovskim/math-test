@@ -11,7 +11,7 @@
 
 @if (_message is not null)
 {
-    <p class="mt-2">@_message</p>
+    <pre class="mt-2 mb-0 small bg-light border p-2">@_message</pre>
 }
 
 @inject HttpClient Http
@@ -35,14 +35,17 @@
         _busy = true;
         _message = null;
 
-        try
+        try 
         {
-            Stream stream = _file.OpenReadStream(10_485_760);
+            Stream stream = _file.OpenReadStream();
             using var body = new MultipartFormDataContent();
             body.Add(new StreamContent(stream), "file", _file.Name);
 
             using HttpResponseMessage response = await Http.PostAsync("api/teacher/exams/batch-xml", body);
-            _message = response.IsSuccessStatusCode ? "OK" : $"Failed ({(int)response.StatusCode})";
+            string bodyText = await response.Content.ReadAsStringAsync();
+            _message = response.IsSuccessStatusCode
+                ? bodyText
+                : $"{(int)response.StatusCode}: {bodyText}";
         }
         finally
         {

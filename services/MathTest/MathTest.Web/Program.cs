@@ -1,5 +1,6 @@
 using MathTest.Application;
 using MathTest.Infrastructure;
+using MathTest.MathEngine;
 using MathTest.Web.Api;
 using MathTest.Web.Components;
 using Microsoft.AspNetCore.Components;
@@ -7,15 +8,17 @@ using Microsoft.AspNetCore.Components;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
+builder.Services.AddMathEngine();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<HttpClient>(sp =>
+builder.Services.AddScoped(sp =>
 {
-    var navigationManager = sp.GetRequiredService<NavigationManager>();
-    return new HttpClient { BaseAddress = new Uri(navigationManager.BaseUri) };
+    NavigationManager navigationManager = sp.GetRequiredService<NavigationManager>();
+    HttpClient httpClient = new() { BaseAddress = new Uri(navigationManager.BaseUri) };
+    return httpClient;
 });
 
 WebApplication app = builder.Build();

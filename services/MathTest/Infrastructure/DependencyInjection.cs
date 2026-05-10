@@ -4,10 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using MathTest.Application.Common.Abstractions;
 using MathTest.Application.Identity.Interfaces;
 using MathTest.Application.Identity.Repositories;
+using MathTest.Application.Interfaces;
 using MathTest.Infrastructure.Options;
 using MathTest.Infrastructure.Persistence;
 using MathTest.Infrastructure.Persistence.Repositories;
 using MathTest.Infrastructure.Security;
+using MathTest.Infrastructure.Xml;
 
 namespace MathTest.Infrastructure;
 
@@ -38,6 +40,7 @@ public static class DependencyInjection
             options.UseSqlServer(connectionString));
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        services.AddSingleton<IXmlExamParser, XmlExamParser>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddEfUnitOfWork<AppDbContext>();
