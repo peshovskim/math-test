@@ -37,9 +37,15 @@
     <p class="text-danger mt-3">@_error</p>
 }
 
-@inject ISender Mediator
+@using System.Text.Json
+@inject HttpClient Http
 
 @code {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+    };
+
     private readonly LoginFormModel _model = new();
 
     private bool _busy;
@@ -54,22 +60,33 @@
         _error = null;
         _response = null;
 
-        LoginUserRequest request =
-            new() { Email = _model.Email.Trim(), Password = _model.Password };
-
-        Result<LoginResponse> result = await Mediator.Send(new LoginUserCommand(request));
-
-        if (result.IsFailure)
+        try
         {
-            _error = result.Error!.Message;
+            LoginUserRequest payload =
+                new() { Email = _model.Email.Trim(), Password = _model.Password };
+
+            using HttpResponseMessage response =
+                await Http.PostAsJsonAsync("api/auth/login", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                _response = await response.Content.ReadFromJsonAsync<LoginResponse>(JsonOptions);
+            }
+            else
+            {
+                AuthProblem? problem = await response.Content.ReadFromJsonAsync<AuthProblem>(JsonOptions);
+                _error = problem?.Message ?? response.ReasonPhrase ?? "Login failed.";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            _response = result.Value;
+            _error = ex.Message;
         }
 
         _busy = false;
     }
+
+    private sealed record AuthProblem(string? Code, string? Message);
 
     private sealed class LoginFormModel
     {

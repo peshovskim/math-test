@@ -18,8 +18,8 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(user => user.Email).HasColumnType("nvarchar(256)").IsRequired();
 
-        builder.Property(u => u.PasswordHash).HasColumnType("nvarchar(max)");
+        builder.Property(u => u.PasswordHash).HasColumnType("varbinary(max)").IsRequired();
 
-        builder.Property(u => u.Salt).HasColumnType("nvarchar(max)");
+        builder.Property(u => u.Salt).HasColumnType("varbinary(max)").IsRequired();
     }
 }

@@ -3,8 +3,8 @@ CREATE TABLE [dbo].[User](
     [FirstName]             NVARCHAR(256)       NULL,
     [LastName]              NVARCHAR(256)       NULL,
     [Email]                 NVARCHAR(256)       NOT NULL,
-    [PasswordHash]          NVARCHAR(MAX)       NULL,
-    [Salt]                  NVARCHAR(MAX)       NULL,
+    [PasswordHash]          VARBINARY(MAX)      NOT NULL,
+    [Salt]                  VARBINARY(MAX)      NOT NULL,
 
     CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED ([Id])
 );

@@ -38,9 +38,15 @@
     <p class="@(_success ? "text-success" : "text-danger") mt-3">@_message</p>
 }
 
-@inject ISender Mediator
+@using System.Text.Json
+@inject HttpClient Http
 
 @code {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+    };
+
     private readonly RegisterFormModel _model = new();
 
     private bool _busy;
@@ -54,21 +60,40 @@
         _busy = true;
         _message = null;
 
-        RegisterUserRequest request = new()
+        try
         {
-            FirstName = _model.FirstName.Trim(),
-            LastName = _model.LastName.Trim(),
-            Email = _model.Email.Trim(),
-            Password = _model.Password,
-        };
+            RegisterUserRequest payload = new()
+            {
+                FirstName = _model.FirstName.Trim(),
+                LastName = _model.LastName.Trim(),
+                Email = _model.Email.Trim(),
+                Password = _model.Password,
+            };
 
-        Result result = await Mediator.Send(new RegisterUserCommand(request));
+            using HttpResponseMessage response =
+                await Http.PostAsJsonAsync("api/auth/register", payload);
 
-        _success = result.IsSuccess;
-        _message = result.IsSuccess ? "Registration successful. You can sign in." : result.Error!.Message;
+            _success = response.IsSuccessStatusCode;
+            if (_success)
+            {
+                _message = "Registration successful. You can sign in.";
+            }
+            else
+            {
+                AuthProblem? problem = await response.Content.ReadFromJsonAsync<AuthProblem>(JsonOptions);
+                _message = problem?.Message ?? response.ReasonPhrase ?? "Registration failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _success = false;
+            _message = ex.Message;
+        }
 
         _busy = false;
     }
+
+    private sealed record AuthProblem(string? Code, string? Message);
 
     private sealed class RegisterFormModel
     {
