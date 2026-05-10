@@ -1,0 +1,52 @@
+@page "/teacher/upload-exam-xml"
+@rendermode InteractiveServer
+
+<PageTitle>Upload exam XML</PageTitle>
+
+<h1>Upload exam XML</h1>
+
+<InputFile OnChange="OnFileChanged" accept=".xml" class="form-control w-75 my-2" />
+
+<button type="button" class="btn btn-primary mt-2" disabled="@(_file is null || _busy)" @onclick="UploadAsync">Upload</button>
+
+@if (_message is not null)
+{
+    <p class="mt-2">@_message</p>
+}
+
+@inject HttpClient Http
+
+@code {
+    private IBrowserFile? _file;
+
+    private bool _busy;
+
+    private string? _message;
+
+    private void OnFileChanged(InputFileChangeEventArgs e) => _file = e.File;
+
+    private async Task UploadAsync()
+    {
+        if (_file is null)
+        {
+            return;
+        }
+
+        _busy = true;
+        _message = null;
+
+        try
+        {
+            Stream stream = _file.OpenReadStream(10_485_760);
+            using var body = new MultipartFormDataContent();
+            body.Add(new StreamContent(stream), "file", _file.Name);
+
+            using HttpResponseMessage response = await Http.PostAsync("api/teacher/exams/batch-xml", body);
+            _message = response.IsSuccessStatusCode ? "OK" : $"Failed ({(int)response.StatusCode})";
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+}

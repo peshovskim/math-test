@@ -12,13 +12,9 @@ internal static class AuthApiEndpoints
     {
         RouteGroupBuilder api = app.MapGroup("/api/auth");
 
-        api.MapPost("/register", RegisterAsync)
-            .DisableAntiforgery()
-            .WithName("AuthRegister");
+        api.MapPost("/register", RegisterAsync).DisableAntiforgery().WithName("AuthRegister");
 
-        api.MapPost("/login", LoginAsync)
-            .DisableAntiforgery()
-            .WithName("AuthLogin");
+        api.MapPost("/login", LoginAsync).DisableAntiforgery().WithName("AuthLogin");
 
         return app;
     }

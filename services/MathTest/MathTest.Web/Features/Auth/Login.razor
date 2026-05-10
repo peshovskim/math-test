@@ -11,12 +11,12 @@
 
     <p>
         <label class="fw-bold">Email</label><br />
-        <InputText type="email" @bind-Value="_model.Email" class="form-control w-75" autocomplete="username" />
+        <InputText type="email" @bind-Value="_model.Email" class="form-control w-75" />
         <ValidationMessage For="@(() => _model.Email)" />
     </p>
     <p>
         <label class="fw-bold">Password</label><br />
-        <InputText type="password" @bind-Value="_model.Password" class="form-control w-75" autocomplete="current-password" />
+        <InputText type="password" @bind-Value="_model.Password" class="form-control w-75" />
         <ValidationMessage For="@(() => _model.Password)" />
     </p>
 
@@ -25,14 +25,10 @@
 
 @if (_response is not null)
 {
-    <div class="mt-3 alert alert-success">
-        <strong>Signed in.</strong><br />
-        @_response.FirstName @_response.LastName<br />
-        @_response.Email (id @_response.UserId)
-    </div>
+    <p class="mt-3">@_response.FirstName @_response.LastName / @_response.Email</p>
 }
 
-@if (!string.IsNullOrEmpty(_error))
+@if (_error is not null)
 {
     <p class="text-danger mt-3">@_error</p>
 }
@@ -41,11 +37,6 @@
 @inject HttpClient Http
 
 @code {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-    };
-
     private readonly LoginFormModel _model = new();
 
     private bool _busy;
@@ -62,31 +53,25 @@
 
         try
         {
-            LoginUserRequest payload =
-                new() { Email = _model.Email.Trim(), Password = _model.Password };
-
-            using HttpResponseMessage response =
-                await Http.PostAsJsonAsync("api/auth/login", payload);
+            using HttpResponseMessage response = await Http.PostAsJsonAsync(
+                "api/auth/login",
+                new LoginUserRequest { Email = _model.Email.Trim(), Password = _model.Password });
 
             if (response.IsSuccessStatusCode)
             {
-                _response = await response.Content.ReadFromJsonAsync<LoginResponse>(JsonOptions);
+                _response = await response.Content.ReadFromJsonAsync<LoginResponse>(
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
             else
             {
-                AuthProblem? problem = await response.Content.ReadFromJsonAsync<AuthProblem>(JsonOptions);
-                _error = problem?.Message ?? response.ReasonPhrase ?? "Login failed.";
+                _error = await response.Content.ReadAsStringAsync();
             }
         }
-        catch (Exception ex)
+        finally
         {
-            _error = ex.Message;
+            _busy = false;
         }
-
-        _busy = false;
     }
-
-    private sealed record AuthProblem(string? Code, string? Message);
 
     private sealed class LoginFormModel
     {
