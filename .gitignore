@@ -30,6 +30,11 @@ _ReSharper*/
 ## SQL publish — frequently machine-specific URLs or credentials
 *.publish.settings
 
+## SSDT / SQL Database Project — local tooling cache (machine-specific)
+# Note: If these were ever committed, run: git rm --cached path/to/file.jfm
+**/*.dbmdl
+**/*.jfm
+
 ## Logs & OS noise
 **/logs/
 *.log
