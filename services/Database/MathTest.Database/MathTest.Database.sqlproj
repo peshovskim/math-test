@@ -38,12 +38,18 @@
     <Folder Include="Tables\User\Seed\" />
     <Folder Include="Tables\UserRole\" />
     <Folder Include="Tables\UserRole\Table\" />
+    <Folder Include="Tables\Exams\" />
+    <Folder Include="Tables\Exams\Table\" />
+    <Folder Include="Tables\ExamTask\" />
+    <Folder Include="Tables\ExamTask\Table\" />
     <Folder Include="PostDeployment\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Role\Table\Role.sql" />
     <Build Include="Tables\User\Table\User.sql" />
     <Build Include="Tables\UserRole\Table\UserRole.sql" />
+    <Build Include="Tables\Exams\Table\Exams.sql" />
+    <Build Include="Tables\ExamTask\Table\ExamTask.sql" />
     <PostDeploy Include="PostDeployment\Script.PostDeployment.sql" />
     <None Include="Tables\Role\Seed\SeedRoles.sql" />
     <None Include="MathTest.Database.publish.xml" />
