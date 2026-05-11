@@ -16,7 +16,11 @@ public sealed class Exam
 
     public string FileName { get; set; } = string.Empty;
 
-    public string ExamExternalId { get; set; } = string.Empty;
+    public string ExternalId { get; set; } = string.Empty;
+
+    public string ExternalStudentId { get; set; } = string.Empty;
+
+    public string ExternalTeacherId { get; set; } = string.Empty;
 
     public double Score { get; set; }
 

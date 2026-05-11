@@ -19,5 +19,7 @@ public sealed class ExamTaskConfiguration : IEntityTypeConfiguration<ExamTask>
         builder.Property(t => t.StudentAnswer).IsRequired();
 
         builder.Property(t => t.CorrectAnswer).IsRequired(false);
+
+        builder.Property(t => t.IsCorrect).IsRequired();
     }
 }

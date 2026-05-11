@@ -1,11 +1,13 @@
 CREATE TABLE [dbo].[Exams]
 (
-    [Id]               INT            NOT NULL IDENTITY (1, 1),
-    [StudentUserId]    INT            NULL,
-    [TeacherUserId]    INT            NOT NULL,
-    [FileName]         NVARCHAR(512)  NOT NULL,
-    [ExternalId]       NVARCHAR(256)  NOT NULL,
-    [Score]            FLOAT          NOT NULL,
+    [Id]                  INT            NOT NULL IDENTITY (1, 1),
+    [StudentUserId]       INT            NULL,
+    [TeacherUserId]       INT            NULL,
+    [FileName]            NVARCHAR(512)  NOT NULL,
+    [ExternalId]          NVARCHAR(256)  NOT NULL,
+    [ExternalStudentId]   NVARCHAR(256)  NOT NULL,
+    [ExternalTeacherId]   NVARCHAR(256)  NOT NULL,
+    [Score]               FLOAT          NOT NULL,
 
     CONSTRAINT [PK_Exams] PRIMARY KEY CLUSTERED ([Id]),
     CONSTRAINT [FK_Exams_User_Student] FOREIGN KEY ([StudentUserId]) REFERENCES [dbo].[User] ([Id]),

@@ -6,6 +6,7 @@ CREATE TABLE [dbo].[ExamTask]
     [Expression]     NVARCHAR(MAX)  NOT NULL,
     [StudentAnswer]  FLOAT          NOT NULL,
     [CorrectAnswer]  FLOAT          NULL,
+    [IsCorrect]      BIT            NOT NULL,
 
     CONSTRAINT [PK_ExamTask] PRIMARY KEY CLUSTERED ([Id]),
     CONSTRAINT [FK_ExamTask_Exams] FOREIGN KEY ([ExamId]) REFERENCES [dbo].[Exams] ([Id]) ON DELETE CASCADE
