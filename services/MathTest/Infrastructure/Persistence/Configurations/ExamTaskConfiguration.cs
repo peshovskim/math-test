@@ -12,6 +12,8 @@ public sealed class ExamTaskConfiguration : IEntityTypeConfiguration<ExamTask>
 
         builder.HasKey(t => t.Id);
 
+        builder.Property(t => t.ExternalId).HasMaxLength(256).IsRequired();
+
         builder.Property(t => t.Expression).IsRequired();
 
         builder.Property(t => t.StudentAnswer).IsRequired();

@@ -2,6 +2,7 @@ CREATE TABLE [dbo].[ExamTask]
 (
     [Id]              INT            NOT NULL IDENTITY (1, 1),
     [ExamId]         INT            NOT NULL,
+    [ExternalId]     NVARCHAR(256)  NOT NULL,
     [Expression]     NVARCHAR(MAX)  NOT NULL,
     [StudentAnswer]  FLOAT          NOT NULL,
     [CorrectAnswer]  FLOAT          NULL,

@@ -7,18 +7,18 @@ using SharedKernel;
 
 namespace MathTest.Web.Api;
 
-internal static class TeacherExamEndpoints
+internal static class TeacherExamApiEndpoints
 {
     public static WebApplication MapTeacherExamEndpoints(this WebApplication app)
     {
         RouteGroupBuilder api = app.MapGroup("/api/teacher");
 
-        api.MapPost("/exams/batch-xml", UploadBatchXmlAsync).DisableAntiforgery();
+        api.MapPost("/exams/batch-xml", UploadExamXmlAsync).DisableAntiforgery();
 
         return app;
     }
 
-    private static async Task<IResult> UploadBatchXmlAsync(
+    private static async Task<IResult> UploadExamXmlAsync(
         IFormFile? file,
         ISender mediator,
         CancellationToken cancellationToken)
@@ -28,14 +28,13 @@ internal static class TeacherExamEndpoints
             return TypedResults.BadRequest();
         }
 
-        await using MemoryStream xmlStream = new();
-        await file.CopyToAsync(xmlStream, cancellationToken);
-        xmlStream.Position = 0;
+        await using Stream xmlStream = file.OpenReadStream();
 
-        string fileName = file.FileName ?? string.Empty;
-
-        Result<ExamProcessingResult> result =
-            await mediator.Send(new ProcessExamXmlCommand(xmlStream, fileName), cancellationToken);
+        Result<ExamProcessingResult> result = await mediator.Send(
+            new ProcessExamXmlCommand(
+                xmlStream,
+                file.FileName ?? string.Empty),
+            cancellationToken);
 
         return OkOrError(result);
     }

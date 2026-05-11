@@ -15,7 +15,9 @@ public sealed class ExamConfiguration : IEntityTypeConfiguration<Exam>
 
         builder.Property(e => e.FileName).HasMaxLength(512).IsRequired();
 
-        builder.Property(e => e.ExamExternalId).HasMaxLength(256).IsRequired();
+        builder.Property(e => e.ExternalId).HasMaxLength(256).IsRequired();
+
+        builder.Property(e => e.TeacherUserId).IsRequired();
 
         builder.Property(e => e.Score).IsRequired();
 
@@ -27,7 +29,7 @@ public sealed class ExamConfiguration : IEntityTypeConfiguration<Exam>
         builder.HasOne(e => e.TeacherUser)
             .WithMany()
             .HasForeignKey(e => e.TeacherUserId)
-            .IsRequired(false);
+            .IsRequired();
 
         builder.HasMany(e => e.ExamTasks)
             .WithOne(t => t.Exam)
