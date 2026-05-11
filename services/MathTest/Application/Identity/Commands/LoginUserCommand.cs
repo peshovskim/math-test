@@ -39,6 +39,8 @@ public sealed class LoginUserCommandHandler(
             return Result<LoginResponse>.Unauthorized(ResultCodes.Unauthorized, "Invalid email or password.");
         }
 
+        IReadOnlyList<string> roleNames = await userRepository.GetRoleNamesAsync(user.Id, cancellationToken);
+
         return Result<LoginResponse>.Success(
             new LoginResponse
             {
@@ -46,7 +48,7 @@ public sealed class LoginUserCommandHandler(
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                RoleNames = roleNames,
             });
     }
 }
- 

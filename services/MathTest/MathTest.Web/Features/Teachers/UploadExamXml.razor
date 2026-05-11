@@ -1,4 +1,5 @@
 @page "/teacher/upload-exam-xml"
+@attribute [Authorize(Roles = RoleNames.Teacher)]
 @rendermode InteractiveServer
 
 <PageTitle>Upload exam XML</PageTitle>
@@ -35,9 +36,9 @@
         _busy = true;
         _message = null;
 
-        try 
+        try
         {
-            Stream stream = _file.OpenReadStream();
+            Stream stream = _file.OpenReadStream(10_485_760);
             using var body = new MultipartFormDataContent();
             body.Add(new StreamContent(stream), "file", _file.Name);
 

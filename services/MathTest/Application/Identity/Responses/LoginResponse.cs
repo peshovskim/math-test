@@ -9,4 +9,6 @@ public sealed class LoginResponse
     public required string FirstName { get; init; }
 
     public required string LastName { get; init; }
+
+    public required IReadOnlyList<string> RoleNames { get; init; }
 }

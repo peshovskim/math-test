@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MathTest.Application.Identity.Repositories;
 using MathTest.Domain.Entities.Users;
 
@@ -28,5 +28,15 @@ public sealed class UserRepository(AppDbContext dbContext) : IUserRepository
     public async Task AddAsync(User user, CancellationToken cancellationToken = default)
     {
         await dbContext.Users.AddAsync(user, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<string>> GetRoleNamesAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        List<string> names = await dbContext.UserRoles
+            .Where(ur => ur.UserId == userId)
+            .Select(ur => ur.Role.Name)
+            .ToListAsync(cancellationToken);
+
+        return names;
     }
 }

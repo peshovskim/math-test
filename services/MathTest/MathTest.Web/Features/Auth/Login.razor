@@ -1,85 +1,54 @@
 @page "/login"
+@attribute [AllowAnonymous]
 @rendermode InteractiveServer
 
 <PageTitle>Login</PageTitle>
 
 <h1>Login</h1>
 
-<EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+@if (_error is not null)
+{
+    <p class="text-danger">@_error</p>
+}
 
+<form method="post" action="/api/auth/login">
+    <input type="hidden" name="ReturnUrl" value="@_returnUrl" />
     <p>
         <label class="fw-bold">Email</label><br />
-        <InputText type="email" @bind-Value="_model.Email" class="form-control w-75" />
-        <ValidationMessage For="@(() => _model.Email)" />
+        <input name="Email" type="email" class="form-control w-75" required />
     </p>
     <p>
         <label class="fw-bold">Password</label><br />
-        <InputText type="password" @bind-Value="_model.Password" class="form-control w-75" />
-        <ValidationMessage For="@(() => _model.Password)" />
+        <input name="Password" type="password" class="form-control w-75" required />
     </p>
+    <button type="submit" class="btn btn-primary">Sign in</button>
+</form>
 
-    <button type="submit" class="btn btn-primary" disabled="@_busy">Sign in</button>
-</EditForm>
-
-@if (_response is not null)
-{
-    <p class="mt-3">@_response.FirstName @_response.LastName / @_response.Email</p>
-}
-
-@if (_error is not null)
-{
-    <p class="text-danger mt-3">@_error</p>
-}
-
-@using System.Text.Json
-@inject HttpClient Http
+@inject NavigationManager Navigation
 
 @code {
-    private readonly LoginFormModel _model = new();
-
-    private bool _busy;
+    private string _returnUrl = "/";
 
     private string? _error;
 
-    private LoginResponse? _response;
-
-    private async Task OnSubmitAsync()
+    protected override void OnInitialized()
     {
-        _busy = true;
-        _error = null;
-        _response = null;
-
-        try
+        Uri uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var q = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        if (q.TryGetValue("ReturnUrl", out Microsoft.Extensions.Primitives.StringValues r)
+            && !Microsoft.Extensions.Primitives.StringValues.IsNullOrEmpty(r))
         {
-            using HttpResponseMessage response = await Http.PostAsJsonAsync(
-                "api/auth/login",
-                new LoginUserRequest { Email = _model.Email.Trim(), Password = _model.Password });
-
-            if (response.IsSuccessStatusCode)
-            {
-                _response = await response.Content.ReadFromJsonAsync<LoginResponse>(
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
-            else
-            {
-                _error = await response.Content.ReadAsStringAsync();
-            }
+            _returnUrl = Uri.UnescapeDataString(r.ToString());
         }
-        finally
+
+        if (!_returnUrl.StartsWith('/') || _returnUrl.StartsWith("//", StringComparison.Ordinal))
         {
-            _busy = false;
+            _returnUrl = "/";
         }
-    }
 
-    private sealed class LoginFormModel
-    {
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.EmailAddress]
-        public string Email { get; set; } = "";
-
-        [System.ComponentModel.DataAnnotations.Required]
-        public string Password { get; set; } = "";
+        if (q.ContainsKey("failed"))
+        {
+            _error = "Bad email or password.";
+        }
     }
 }

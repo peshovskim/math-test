@@ -2,7 +2,9 @@ using static MathTest.Web.Api.ApiEndpointResults;
 
 using MathTest.Application.Commands.ProcessExamXml;
 using MathTest.Application.Models;
+using MathTest.Domain.Entities.Users;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using SharedKernel;
 
 namespace MathTest.Web.Api;
@@ -11,7 +13,8 @@ internal static class TeacherExamApiEndpoints
 {
     public static WebApplication MapTeacherExamEndpoints(this WebApplication app)
     {
-        RouteGroupBuilder api = app.MapGroup("/api/teacher");
+        RouteGroupBuilder api = app.MapGroup("/api/teacher")
+            .RequireAuthorization(new AuthorizeAttribute { Roles = RoleNames.Teacher });
 
         api.MapPost("/exams/batch-xml", UploadExamXmlAsync).DisableAntiforgery();
 

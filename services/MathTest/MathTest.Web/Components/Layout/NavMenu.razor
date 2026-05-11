@@ -1,35 +1,134 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
+
     <div class="container-fluid">
+
         <a class="navbar-brand" href="">Math Test</a>
+
     </div>
+
 </div>
+
+
 
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
+
+
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+
     <nav class="flex-column">
+
         <div class="nav-item px-3">
+
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+
             </NavLink>
+
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="register">
-                Register
-            </NavLink>
-        </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="login">
-                Login
-            </NavLink>
-        </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="teacher/upload-exam-xml">
-                Upload XML
-            </NavLink>
-        </div>
+        <AuthorizeView>
+
+            <Authorized Context="auth">
+
+                <AuthorizeView Roles="@RoleNames.Teacher" Context="teacherGate">
+
+                    <Authorized>
+
+                        <div class="nav-item px-3">
+
+                            <NavLink class="nav-link" href="teacher">
+
+                                Teacher
+
+                            </NavLink>
+
+                        </div>
+
+                        <div class="nav-item px-3">
+
+                            <NavLink class="nav-link" href="teacher/upload-exam-xml">
+
+                                Upload XML
+
+                            </NavLink>
+
+                        </div>
+
+                    </Authorized>
+
+                </AuthorizeView>
+
+                <AuthorizeView Roles="@RoleNames.Student" Context="studentGate">
+
+                    <Authorized>
+
+                        <div class="nav-item px-3">
+
+                            <NavLink class="nav-link" href="student">
+
+                                Student
+
+                            </NavLink>
+
+                        </div>
+
+                        <div class="nav-item px-3">
+
+                            <NavLink class="nav-link" href="student/results">
+
+                                Results
+
+                            </NavLink>
+
+                        </div>
+
+                    </Authorized>
+
+                </AuthorizeView>
+
+                <div class="nav-item px-3">
+
+                    <form method="post" action="/api/auth/sign-out" class="py-2">
+
+                        <button type="submit" class="nav-link btn btn-link text-start ps-0">Sign out</button>
+
+                    </form>
+
+                </div>
+
+            </Authorized>
+
+            <NotAuthorized>
+
+                <div class="nav-item px-3">
+
+                    <NavLink class="nav-link" href="register">
+
+                        Register
+
+                    </NavLink>
+
+                </div>
+
+                <div class="nav-item px-3">
+
+                    <NavLink class="nav-link" href="login">
+
+                        Login
+
+                    </NavLink>
+
+                </div>
+
+            </NotAuthorized>
+
+        </AuthorizeView>
+
     </nav>
+
 </div>
+
