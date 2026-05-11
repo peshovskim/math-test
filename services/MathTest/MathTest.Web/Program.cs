@@ -29,6 +29,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization();
 
+builder.Services
+    .AddOptions<IntegrationApiOptions>()
+    .Bind(builder.Configuration.GetSection(IntegrationApiOptions.SectionName))
+    .Validate(o => string.IsNullOrWhiteSpace(o.ApiKey) || o.ApiKey.Length >= 8, "Integration:ApiKey must be at least 8 characters when set.")
+    .ValidateOnStart();
+
 builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();
 builder.Services.AddTransient<BrowserCookieForwardingHandler>();
 
@@ -64,6 +70,7 @@ app.UseAntiforgery();
 
 app.MapAuthApi();
 app.MapTeacherExamEndpoints();
+app.MapIntegrationEndpoints();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
