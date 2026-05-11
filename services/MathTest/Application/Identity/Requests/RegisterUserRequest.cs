@@ -20,5 +20,9 @@ public sealed class RegisterUserRequest
     [MinLength(8)]
     public string Password { get; init; } = string.Empty;
 
+    [Required]
+    [MaxLength(256)]
+    public string ExternalId { get; init; } = string.Empty;
+
     public bool RegisterAsTeacher { get; init; }
 }

@@ -1,5 +1,6 @@
 using MediatR;
 using MathTest.Application.Common.Abstractions;
+using MathTest.Application.ExamImport;
 using MathTest.Application.Identity.Requests;
 using MathTest.Application.Identity.Repositories;
 using MathTest.Application.Identity.Interfaces;
@@ -25,9 +26,34 @@ public sealed class RegisterUserCommandHandler(
         if (string.IsNullOrWhiteSpace(request.FirstName) ||
             string.IsNullOrWhiteSpace(request.LastName) ||
             string.IsNullOrWhiteSpace(request.Email) ||
-            string.IsNullOrWhiteSpace(request.Password))
+            string.IsNullOrWhiteSpace(request.Password) ||
+            string.IsNullOrWhiteSpace(request.ExternalId))
         {
-            return Result.Invalid(ResultCodes.Validation, "First name, last name, email, and password are required.");
+            return Result.Invalid(ResultCodes.Validation, "First name, last name, email, password, and external ID are required.");
+        }
+
+        string externalId = request.ExternalId.Trim();
+
+        if (request.RegisterAsTeacher)
+        {
+            if (!PredefinedExternalIds.IsKnownTeacher(externalId))
+            {
+                return Result.Invalid(ResultCodes.Validation, "The external ID is not valid.");
+            }
+        }
+        else
+        {
+            if (!PredefinedExternalIds.IsKnownStudent(externalId))
+            {
+                return Result.Invalid(ResultCodes.Validation, "The external ID is not valid.");
+            }
+        }
+
+        User? existingByExternalId = await userRepository.GetByExternalIdAsync(externalId, cancellationToken);
+
+        if (existingByExternalId is not null)
+        {
+            return Result.Conflicted(ResultCodes.Conflict, "This external ID is already registered.");
         }
 
         var normalizedEmail = request.Email.Trim().ToLowerInvariant();
@@ -45,7 +71,7 @@ public sealed class RegisterUserCommandHandler(
 
         if (role is null)
         {
-            return Result.NotFound(ResultCodes.Validation, "Role not found");
+            return Result.Invalid(ResultCodes.Validation, "Missing role row.");
         }
 
         (byte[]? hash, byte[]? salt) = passwordHasher.HashPassword(request.Password);
@@ -55,6 +81,7 @@ public sealed class RegisterUserCommandHandler(
             FirstName = request.FirstName.Trim(),
             LastName = request.LastName.Trim(),
             Email = normalizedEmail,
+            ExternalId = externalId,
             PasswordHash = hash,
             Salt = salt,
         };

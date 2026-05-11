@@ -30,6 +30,12 @@
         <ValidationMessage For="@(() => _model.Password)" />
     </p>
     <p>
+        <label class="fw-bold">Predefined external ID</label><br />
+        <InputText @bind-Value="_model.ExternalId" class="form-control w-75" autocomplete="off" />
+        <ValidationMessage For="@(() => _model.ExternalId)" />
+        <span class="form-text">Teacher: T-10001 to T-10003. Student: S-20001 to S-20005.</span>
+    </p>
+    <p>
         <label>
             <InputCheckbox @bind-Value="_model.RegisterAsTeacher" /> teacher
         </label>
@@ -67,6 +73,7 @@
                     LastName = _model.LastName.Trim(),
                     Email = _model.Email.Trim(),
                     Password = _model.Password,
+                    ExternalId = _model.ExternalId.Trim(),
                     RegisterAsTeacher = _model.RegisterAsTeacher,
                 });
 
@@ -97,6 +104,10 @@
         [System.ComponentModel.DataAnnotations.Required]
         [System.ComponentModel.DataAnnotations.MinLength(8)]
         public string Password { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.MaxLength(256)]
+        public string ExternalId { get; set; } = "";
 
         public bool RegisterAsTeacher { get; set; }
     }
