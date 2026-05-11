@@ -12,6 +12,19 @@ public sealed class UserRepository(AppDbContext dbContext) : IUserRepository
             .FirstOrDefaultAsync(user => user.Email == email, cancellationToken);
     }
 
+    public async Task<User?> GetByExternalIdAsync(string externalId, CancellationToken cancellationToken = default)
+    {
+        string normalized = externalId.Trim();
+
+        if (normalized.Length == 0)
+        {
+            return null;
+        }
+
+        return await dbContext.Users
+            .FirstOrDefaultAsync(user => user.ExternalId == normalized, cancellationToken);
+    }
+
     public async Task AddAsync(User user, CancellationToken cancellationToken = default)
     {
         await dbContext.Users.AddAsync(user, cancellationToken);

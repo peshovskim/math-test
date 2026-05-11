@@ -11,6 +11,7 @@ public sealed class MathEvaluator : IMathEvaluator
     {
         if (string.IsNullOrWhiteSpace(expression))
         {
+            // Return Success = false so that we don't fail the whole process bc of one evaluation faliure
             return new EvaluationResult
             {
                 Success = false,
@@ -24,6 +25,7 @@ public sealed class MathEvaluator : IMathEvaluator
 
             if (computed is null or DBNull)
             {
+                // Return Success = false so that we don't fail the whole process bc of one evaluation faliure
                 return new EvaluationResult
                 {
                     Success = false,
@@ -41,6 +43,7 @@ public sealed class MathEvaluator : IMathEvaluator
         }
         catch (Exception ex)
         {
+            // Return Success = false so that we don't fail the whole process bc of one evaluation faliure
             return new EvaluationResult
             {
                 Success = false,

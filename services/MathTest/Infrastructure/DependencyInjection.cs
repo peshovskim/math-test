@@ -41,6 +41,7 @@ public static class DependencyInjection
 
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IXmlExamParser, XmlExamParser>();
+        services.AddScoped<IExamRepository, ExamRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddEfUnitOfWork<AppDbContext>();

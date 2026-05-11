@@ -1,8 +1,8 @@
 namespace MathTest.Application.Models;
 
-public sealed class ParsedTask
+public sealed class ParsedExamTask
 {
-    public int TaskOrder { get; set; }
+    public string? ExternalId { get; set; }
 
     public string Expression { get; set; } = string.Empty;
 

@@ -4,5 +4,5 @@ public sealed class ExamProcessingResult
 {
     public ParsedExamBatch Parsed { get; set; } = null!;
 
-    public List<GradedTaskOutcome> GradedTasks { get; set; } = [];
+    public List<GradedTask> GradedTasks { get; set; } = [];
 }

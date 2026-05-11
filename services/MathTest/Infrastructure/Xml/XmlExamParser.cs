@@ -23,13 +23,16 @@ public sealed class XmlExamParser : IXmlExamParser
                     "Invalid XML. Missing teacher root element.");
             }
 
-            ParsedExamBatch batch = new()
+            string teacherExternalId = GetAttributeValueIgnoreCase(teacherElement, "id") ?? string.Empty;
+
+            if (teacherExternalId.Length == 0)
             {
-                TeacherExternalId =
-                    teacherElement.Attribute("ID")?.Value
-                    ?? teacherElement.Attribute("id")?.Value
-                    ?? string.Empty,
-            };
+                return Result<ParsedExamBatch>.Invalid(
+                    ResultCodes.Validation,
+                    "Invalid XML. Teacher element must have an ID attribute.");
+            }
+
+            ParsedExamBatch batch = new() { TeacherExternalId = teacherExternalId };
 
             XElement? studentsElement = teacherElement.Element("Students");
 
@@ -42,12 +45,9 @@ public sealed class XmlExamParser : IXmlExamParser
 
             foreach (XElement studentElement in studentsElement.Elements("Student"))
             {
-                ParsedStudentExam parsedStudentExam = new()
+                ParsedExam parsedExam = new()
                 {
-                    StudentExternalId =
-                        studentElement.Attribute("ID")?.Value
-                        ?? studentElement.Attribute("id")?.Value
-                        ?? string.Empty,
+                    StudentExternalId = GetAttributeValueIgnoreCase(studentElement, "id") ?? string.Empty,
                 };
 
                 XElement? examElement = studentElement.Element("Exam");
@@ -57,10 +57,7 @@ public sealed class XmlExamParser : IXmlExamParser
                     continue;
                 }
 
-                parsedStudentExam.ExamExternalId =
-                    examElement.Attribute("Id")?.Value
-                    ?? examElement.Attribute("id")?.Value
-                    ?? string.Empty;
+                parsedExam.ExamExternalId = GetAttributeValueIgnoreCase(examElement, "id") ?? string.Empty;
 
                 foreach (XElement taskElement in examElement.Elements("Task"))
                 {
@@ -87,21 +84,18 @@ public sealed class XmlExamParser : IXmlExamParser
                         continue;
                     }
 
-                    if (!int.TryParse(taskElement.Attribute("id")?.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int taskOrder))
-                    {
-                        taskOrder = 0;
-                    }
+                    string? taskExternalId = GetAttributeValueIgnoreCase(taskElement, "id");
 
-                    parsedStudentExam.Tasks.Add(
-                        new ParsedTask
+                    parsedExam.Tasks.Add(
+                        new ParsedExamTask
                         {
-                            TaskOrder = taskOrder,
+                            ExternalId = taskExternalId,
                             Expression = expression,
                             StudentAnswer = studentAnswer,
                         });
                 }
 
-                batch.StudentExams.Add(parsedStudentExam);
+                batch.Exams.Add(parsedExam);
             }
 
             return Result<ParsedExamBatch>.Success(batch);
@@ -112,5 +106,15 @@ public sealed class XmlExamParser : IXmlExamParser
                 ResultCodes.Validation,
                 $"Failed to parse XML. {ex.Message}");
         }
+    }
+
+    private static string? GetAttributeValueIgnoreCase(XElement element, string name)
+    {
+        return element
+            .Attributes()
+            .FirstOrDefault(a =>
+                string.Equals(a.Name.LocalName, name, StringComparison.OrdinalIgnoreCase))
+            ?.Value?
+            .Trim();
     }
 }

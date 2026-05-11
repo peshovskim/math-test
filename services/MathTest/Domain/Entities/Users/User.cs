@@ -4,6 +4,8 @@ public sealed class User
 {
     public int Id { get; set; }
 
+    public string? ExternalId { get; set; }
+
     public string FirstName { get; set; } = string.Empty;
 
     public string LastName { get; set; } = string.Empty;
