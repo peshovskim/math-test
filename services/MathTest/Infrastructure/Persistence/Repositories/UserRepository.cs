@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MathTest.Application.Identity.Repositories;
 using MathTest.Domain.Entities.Users;
 

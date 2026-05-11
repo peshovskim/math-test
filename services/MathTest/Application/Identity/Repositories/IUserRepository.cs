@@ -1,4 +1,4 @@
-﻿using MathTest.Domain.Entities.Users;
+using MathTest.Domain.Entities.Users;
 
 namespace MathTest.Application.Identity.Repositories;
 

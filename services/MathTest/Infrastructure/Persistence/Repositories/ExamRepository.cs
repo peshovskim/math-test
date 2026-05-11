@@ -10,4 +10,9 @@ public sealed class ExamRepository(AppDbContext dbContext) : IExamRepository
     {
         await dbContext.Exams.AddAsync(exam, cancellationToken);
     }
+
+    public Task<bool> ExistsByExamExternalIdAsync(string examExternalId, CancellationToken cancellationToken = default)
+    {
+        return dbContext.Exams.AnyAsync(e => e.ExternalId == examExternalId, cancellationToken);
+    }
 }
