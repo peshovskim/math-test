@@ -11,13 +11,16 @@ public sealed class ExamRepository(AppDbContext dbContext) : IExamRepository
         await dbContext.Exams.AddAsync(exam, cancellationToken);
     }
 
-    public Task<bool> ExistsByExamAndStudentExternalIdsAsync(
+    public Task<bool> ExistsByTeacherStudentAndExamExternalIdsAsync(
+        string teacherExternalId,
         string examExternalId,
         string studentExternalId,
         CancellationToken cancellationToken = default)
     {
         return dbContext.Exams.AnyAsync(
-            e => e.ExternalId == examExternalId && e.ExternalStudentId == studentExternalId,
+            e => e.ExternalTeacherId == teacherExternalId
+                 && e.ExternalId == examExternalId
+                 && e.ExternalStudentId == studentExternalId,
             cancellationToken);
     }
 }
