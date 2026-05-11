@@ -2,10 +2,19 @@
 
 <PageTitle>Math Test</PageTitle>
 
-<h1>Math Test</h1>
+<h1 class="mb-2">Math Test</h1>
 
-<ul class="my-3">
-    <li><a href="register">register</a></li>
-    <li><a href="login">login</a></li>
-    <li><a href="teacher/upload-exam-xml">upload xml</a></li>
-</ul>
+<p class="mb-4" style="max-width: 36rem; line-height: 1.5;">
+    Upload XML to get graded exams out.
+</p>
+
+<AuthorizeView>
+    <Authorized>
+        <p class="mb-0 text-secondary">Open Teacher or Student from the nav.</p>
+    </Authorized>
+    <NotAuthorized>
+        <p class="mb-3">No session yet — register once, then sign in.</p>
+        <a class="btn btn-primary me-2" href="login">Sign in</a>
+        <a class="btn btn-outline-secondary" href="register">Register</a>
+    </NotAuthorized>
+</AuthorizeView>

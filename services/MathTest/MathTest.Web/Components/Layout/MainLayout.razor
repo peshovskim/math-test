@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@using System.Security.Claims
 
 <div class="page">
     <div class="sidebar">
@@ -6,8 +7,21 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <span class="text-muted">Blazor Server UI • MathTest</span>
+        <div class="top-row px-4 d-flex align-items-center justify-content-end flex-wrap gap-2">
+            <AuthorizeView>
+                <Authorized Context="auth">
+                    @{
+                        var who = DisplayName(auth.User);
+                    }
+                    @if (!string.IsNullOrEmpty(who))
+                    {
+                        <span class="small text-secondary text-truncate d-inline-block" style="max-width: min(18rem, 55vw);" title="@who">@who</span>
+                    }
+                </Authorized>
+                <NotAuthorized>
+                    <a class="btn btn-sm btn-outline-secondary" href="login">Sign in</a>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
 
         <article class="content px-4">
@@ -17,7 +31,21 @@
 </div>
 
 <div id="blazor-error-ui">
-    An unhandled error has occurred.
+    Hit a client error — try reloading.
     <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
+    <a class="dismiss" title="Close">×</a>
 </div>
+
+@code {
+    private static string? DisplayName(ClaimsPrincipal user)
+    {
+        var name = user.Identity?.Name;
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            return name;
+        }
+
+        var email = user.FindFirst(ClaimTypes.Email)?.Value;
+        return string.IsNullOrWhiteSpace(email) ? null : email;
+    }
+}

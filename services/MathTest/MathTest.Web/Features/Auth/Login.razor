@@ -2,25 +2,30 @@
 @attribute [AllowAnonymous]
 @rendermode InteractiveServer
 
-<PageTitle>Login</PageTitle>
+<PageTitle>Sign in</PageTitle>
 
-<h1>Login</h1>
+<h1 class="mb-3">Sign in</h1>
+
+@if (_registeredOk)
+{
+    <div class="alert alert-success py-2" role="status">You successfully registered, please sign in below.</div>
+}
 
 @if (_error is not null)
 {
-    <p class="text-danger">@_error</p>
+    <div class="alert alert-danger" role="alert">@_error</div>
 }
 
-<form method="post" action="/api/auth/login">
+<form method="post" action="/api/auth/login" class="mt-2" style="max-width: 22rem;">
     <input type="hidden" name="ReturnUrl" value="@_returnUrl" />
-    <p>
-        <label class="fw-bold">Email</label><br />
-        <input name="Email" type="email" class="form-control w-75" required />
-    </p>
-    <p>
-        <label class="fw-bold">Password</label><br />
-        <input name="Password" type="password" class="form-control w-75" required />
-    </p>
+    <div class="mb-3">
+        <label class="form-label" for="login-email">Email</label>
+        <input id="login-email" name="Email" type="email" class="form-control" required autocomplete="username" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="login-password">Password</label>
+        <input id="login-password" name="Password" type="password" class="form-control" required autocomplete="current-password" />
+    </div>
     <button type="submit" class="btn btn-primary">Sign in</button>
 </form>
 
@@ -30,6 +35,8 @@
     private string _returnUrl = "/";
 
     private string? _error;
+
+    private bool _registeredOk;
 
     protected override void OnInitialized()
     {
@@ -48,7 +55,12 @@
 
         if (q.ContainsKey("failed"))
         {
-            _error = "Bad email or password.";
+            _error = "Email or password didn’t match.";
+        }
+
+        if (q.ContainsKey("registered"))
+        {
+            _registeredOk = true;
         }
     }
 }

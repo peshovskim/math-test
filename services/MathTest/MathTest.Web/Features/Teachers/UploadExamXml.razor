@@ -2,29 +2,44 @@
 @attribute [Authorize(Roles = RoleNames.Teacher)]
 @rendermode InteractiveServer
 
-<PageTitle>Upload exam XML</PageTitle>
+<PageTitle>Exam XML</PageTitle>
 
-<h1>Upload exam XML</h1>
+<h1 class="mb-2">Exam XML</h1>
+<p class="text-secondary small mb-3">.xml only, 10&nbsp;MB max (same limit as the picker).</p>
 
-<InputFile OnChange="OnFileChanged" accept=".xml" class="form-control w-75 my-2" />
+<InputFile @key="_fileInputKey" OnChange="OnFileChanged" accept=".xml" class="form-control my-2" style="max-width: 28rem;" />
 
-<button type="button" class="btn btn-primary mt-2" disabled="@(_file is null || _busy)" @onclick="UploadAsync">Upload</button>
+<button type="button" class="btn btn-primary mt-1" disabled="@(_file is null || _busy)" @onclick="UploadAsync">Send file</button>
 
-@if (_message is not null)
+@if (_successMessage is not null)
 {
-    <pre class="mt-2 mb-0 small bg-light border p-2">@_message</pre>
+    <div class="alert alert-success mt-3" role="alert">@_successMessage</div>
+}
+
+@if (_errorMessage is not null)
+{
+    <div class="alert alert-danger mt-3" role="alert">@_errorMessage</div>
 }
 
 @inject HttpClient Http
 
 @code {
+    private int _fileInputKey;
+
     private IBrowserFile? _file;
 
     private bool _busy;
 
-    private string? _message;
+    private string? _successMessage;
 
-    private void OnFileChanged(InputFileChangeEventArgs e) => _file = e.File;
+    private string? _errorMessage;
+
+    private void OnFileChanged(InputFileChangeEventArgs e)
+    {
+        _file = e.File;
+        _successMessage = null;
+        _errorMessage = null;
+    }
 
     private async Task UploadAsync()
     {
@@ -34,7 +49,8 @@
         }
 
         _busy = true;
-        _message = null;
+        _successMessage = null;
+        _errorMessage = null;
 
         try
         {
@@ -44,9 +60,17 @@
 
             using HttpResponseMessage response = await Http.PostAsync("api/teacher/exams/batch-xml", body);
             string bodyText = await response.Content.ReadAsStringAsync();
-            _message = response.IsSuccessStatusCode
-                ? bodyText
-                : $"{(int)response.StatusCode}: {bodyText}";
+
+            if (response.IsSuccessStatusCode)
+            {
+                _file = null;
+                _fileInputKey++;
+                _successMessage = "Saved — that batch is in the DB now.";
+            }
+            else
+            {
+                _errorMessage = HttpJsonErrorMessage.FromResponseBody(bodyText);
+            }
         }
         finally
         {

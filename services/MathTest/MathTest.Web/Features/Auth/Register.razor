@@ -4,65 +4,65 @@
 
 <PageTitle>Register</PageTitle>
 
-<h1>Register</h1>
+<h1 class="mb-3">New account</h1>
 
-<EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+<EditForm Model="_model" OnValidSubmit="OnSubmitAsync" class="mt-2" style="max-width: 26rem;">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <p>
-        <label class="fw-bold">First name</label><br />
-        <InputText @bind-Value="_model.FirstName" class="form-control w-75" />
-        <ValidationMessage For="@(() => _model.FirstName)" />
-    </p>
-    <p>
-        <label class="fw-bold">Last name</label><br />
-        <InputText @bind-Value="_model.LastName" class="form-control w-75" />
-        <ValidationMessage For="@(() => _model.LastName)" />
-    </p>
-    <p>
-        <label class="fw-bold">Email</label><br />
-        <InputText type="email" @bind-Value="_model.Email" class="form-control w-75" />
-        <ValidationMessage For="@(() => _model.Email)" />
-    </p>
-    <p>
-        <label class="fw-bold">Password</label><br />
-        <InputText type="password" @bind-Value="_model.Password" class="form-control w-75" />
-        <ValidationMessage For="@(() => _model.Password)" />
-    </p>
-    <p>
-        <label class="fw-bold">Predefined external ID</label><br />
-        <InputText @bind-Value="_model.ExternalId" class="form-control w-75" autocomplete="off" />
-        <ValidationMessage For="@(() => _model.ExternalId)" />
-        <span class="form-text">Teacher: T-10001 to T-10003. Student: S-20001 to S-20005.</span>
-    </p>
-    <p>
-        <label>
-            <InputCheckbox @bind-Value="_model.RegisterAsTeacher" /> teacher
-        </label>
-    </p>
+    @if (_apiError is not null)
+    {
+        <div class="alert alert-danger py-2" role="alert">@_apiError</div>
+    }
 
-    <button type="submit" class="btn btn-primary" disabled="@_busy">Register</button>
+    <div class="mb-3">
+        <label class="form-label">First name</label>
+        <InputText @bind-Value="_model.FirstName" class="form-control" />
+        <ValidationMessage For="@(() => _model.FirstName)" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Last name</label>
+        <InputText @bind-Value="_model.LastName" class="form-control" />
+        <ValidationMessage For="@(() => _model.LastName)" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <InputText type="email" @bind-Value="_model.Email" class="form-control" autocomplete="email" />
+        <ValidationMessage For="@(() => _model.Email)" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password (8+ chars)</label>
+        <InputText type="password" @bind-Value="_model.Password" class="form-control" autocomplete="new-password" />
+        <ValidationMessage For="@(() => _model.Password)" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">External ID</label>
+        <InputText @bind-Value="_model.ExternalId" class="form-control" autocomplete="off" />
+        <ValidationMessage For="@(() => _model.ExternalId)" />
+        <div class="form-text">Pick from the seeded list — teachers <code>T-10001</code>…<code>T-10003</code>, students <code>S-20001</code>…<code>S-20005</code>.</div>
+    </div>
+    <div class="form-check mb-3">
+        <InputCheckbox @bind-Value="_model.RegisterAsTeacher" class="form-check-input" id="reg-teacher" />
+        <label class="form-check-label" for="reg-teacher">Teacher (uncheck = student)</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary" disabled="@_busy">Create account</button>
 </EditForm>
 
-@if (_message is not null)
-{
-    <p class="mt-3">@_message</p>
-}
-
 @inject HttpClient Http
+@inject NavigationManager Navigation
 
 @code {
     private readonly RegisterFormModel _model = new();
 
     private bool _busy;
 
-    private string? _message;
+    private string? _apiError;
 
     private async Task OnSubmitAsync()
     {
         _busy = true;
-        _message = null;
+        _apiError = null;
 
         try
         {
@@ -78,9 +78,14 @@
                     RegisterAsTeacher = _model.RegisterAsTeacher,
                 });
 
-            _message = response.IsSuccessStatusCode
-                ? "OK"
-                : await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                Navigation.NavigateTo("/login?registered=1");
+                return;
+            }
+
+            string body = await response.Content.ReadAsStringAsync();
+            _apiError = HttpJsonErrorMessage.FromResponseBody(body);
         }
         finally
         {
