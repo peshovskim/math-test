@@ -6,6 +6,8 @@ public interface IExamRepository
 {
     Task AddAsync(Exam exam, CancellationToken cancellationToken = default);
 
-    /// <summary>Returns true if an exam row already exists for this XML exam id (<see cref="Exam.ExternalId"/>).</summary>
-    Task<bool> ExistsByExamExternalIdAsync(string examExternalId, CancellationToken cancellationToken = default);
+    Task<bool> ExistsByExamAndStudentExternalIdsAsync(
+        string examExternalId,
+        string studentExternalId,
+        CancellationToken cancellationToken = default);
 }

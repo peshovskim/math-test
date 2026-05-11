@@ -106,27 +106,26 @@ public sealed class ProcessExamXmlCommandHandler(
     {
         User? teacher = await users.GetByExternalIdAsync(result.Parsed.TeacherExternalId, cancellationToken);
 
-        // Skip if exam already exists to avoid duplicatess
-        var examIdsFromBatch = new List<string>();
+        // Skip if exam for the same student already exists to avoid duplicatess
+        var examKeysQueuedInBatch = new List<(string Exam, string Student)>();
 
         foreach (ParsedExam parsedExam in result.Parsed.Exams)
         {
             string examExternalId = parsedExam.ExamExternalId.Trim();
+            string studentExternalId = parsedExam.StudentExternalId.Trim();
+            (string Exam, string Student) key = (examExternalId, studentExternalId);
 
-            if (examExternalId.Length > 0)
+            if (examKeysQueuedInBatch.Contains(key))
             {
-                if (examIdsFromBatch.Contains(examExternalId))
-                {
-                    continue;
-                }
-
-                if (await exams.ExistsByExamExternalIdAsync(examExternalId, cancellationToken))
-                {
-                    continue;
-                }
-
-                examIdsFromBatch.Add(examExternalId);
+                continue;
             }
+
+            if (await exams.ExistsByExamAndStudentExternalIdsAsync(examExternalId, studentExternalId, cancellationToken))
+            {
+                continue;
+            }
+
+            examKeysQueuedInBatch.Add(key);
 
             User? student = await users.GetByExternalIdAsync(parsedExam.StudentExternalId, cancellationToken);
 
