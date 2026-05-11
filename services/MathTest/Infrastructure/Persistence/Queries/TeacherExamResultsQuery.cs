@@ -4,21 +4,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathTest.Infrastructure.Persistence.Queries;
 
-public sealed class StudentExamResultsQuery(AppDbContext dbContext) : IStudentExamResultsQuery
+public sealed class TeacherExamResultsQuery(AppDbContext dbContext) : ITeacherExamResultsQuery
 {
-    public async Task<IReadOnlyList<StudentExamListItem>> GetExamsForStudentAsync(
-        int studentUserId,
+    public async Task<IReadOnlyList<TeacherExamListItem>> GetExamsForTeacherAsync(
+        int teacherUserId,
         CancellationToken cancellationToken = default)
     {
         List<Exam> exams = await dbContext.Exams
             .AsNoTracking()
             .AsSplitQuery()
             .Include(e => e.ExamTasks)
-            .Where(e => e.StudentUserId == studentUserId)
+            .Where(e => e.TeacherUserId == teacherUserId)
             .OrderByDescending(e => e.Id)
             .ToListAsync(cancellationToken);
 
-        List<StudentExamListItem> result = new(capacity: exams.Count);
+        List<TeacherExamListItem> result = new(capacity: exams.Count);
 
         foreach (Exam exam in exams)
         {
@@ -36,11 +36,12 @@ public sealed class StudentExamResultsQuery(AppDbContext dbContext) : IStudentEx
                 .ToList();
 
             result.Add(
-                new StudentExamListItem
+                new TeacherExamListItem
                 {
                     ExamId = exam.Id,
                     ExamExternalId = exam.ExternalId,
                     FileName = exam.FileName,
+                    ExternalStudentId = exam.ExternalStudentId,
                     Score = exam.Score,
                     Tasks = tasks,
                 });

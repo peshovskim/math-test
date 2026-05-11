@@ -45,6 +45,7 @@ public static class DependencyInjection
         services.AddSingleton<IXmlExamParser, XmlExamParser>();
         services.AddScoped<IExamRepository, ExamRepository>();
         services.AddScoped<IStudentExamResultsQuery, StudentExamResultsQuery>();
+        services.AddScoped<ITeacherExamResultsQuery, TeacherExamResultsQuery>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddEfUnitOfWork<AppDbContext>();

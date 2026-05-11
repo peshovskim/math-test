@@ -1,15 +1,15 @@
-@page "/student/results"
-@attribute [Authorize(Roles = RoleNames.Student)]
+@page "/teacher/exams"
+@attribute [Authorize(Roles = RoleNames.Teacher)]
 @rendermode InteractiveServer
 @using System.Net.Http.Json
 @using System.Text.Json
 @using MathTest.Application.ExamResults
 
-<PageTitle>My exams</PageTitle>
+<PageTitle>Class exams</PageTitle>
 
-<h1 class="mb-2">My exams</h1>
+<h1 class="mb-2">Class exams</h1>
 
-<p class="text-secondary small mb-4">Each card is one imported exam. Green rows are correct tasks; red are not.</p>
+<p class="text-secondary small mb-4">Exams you imported (by teacher id in XML), with student id and per-task correctness.</p>
 
 @if (_loadError is not null)
 {
@@ -21,17 +21,18 @@ else if (_exams is null)
 }
 else if (_exams.Count == 0)
 {
-    <p class="text-muted">No exams are linked to your account yet. After a teacher uploads XML that references your external id, results will show here.</p>
+    <p class="text-muted">No exams are linked to your teacher account yet. Upload XML that uses your external id as the teacher root.</p>
 }
 else
 {
-    @foreach (StudentExamListItem exam in _exams)
+    @foreach (TeacherExamListItem exam in _exams)
     {
         <section class="card mb-4 shadow-sm">
             <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <div>
                     <strong>Exam</strong>
                     <code class="ms-1">@exam.ExamExternalId</code>
+                    <span class="text-muted small ms-2">Student <code>@exam.ExternalStudentId</code></span>
                 </div>
                 <div>
                     <span class="badge bg-secondary">Score: @exam.Score.ToString("0.#")%</span>
@@ -45,7 +46,7 @@ else
                             <tr>
                                 <th scope="col">Task</th>
                                 <th scope="col">Expression</th>
-                                <th scope="col" class="text-end">Your answer</th>
+                                <th scope="col" class="text-end">Student answer</th>
                                 <th scope="col" class="text-end">Correct</th>
                                 <th scope="col" class="text-center">Result</th>
                             </tr>
@@ -72,7 +73,7 @@ else
 @inject HttpClient Http
 
 @code {
-    private IReadOnlyList<StudentExamListItem>? _exams;
+    private IReadOnlyList<TeacherExamListItem>? _exams;
 
     private string? _loadError;
 
@@ -81,7 +82,7 @@ else
         try
         {
             JsonSerializerOptions json = new(JsonSerializerDefaults.Web);
-            _exams = await Http.GetFromJsonAsync<List<StudentExamListItem>>("api/student/exams", json);
+            _exams = await Http.GetFromJsonAsync<List<TeacherExamListItem>>("api/teacher/exams", json);
         }
         catch (Exception ex)
         {

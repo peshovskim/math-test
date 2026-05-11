@@ -1,0 +1,13 @@
+@page "/teacher"
+@attribute [Authorize(Roles = RoleNames.Teacher)]
+
+<PageTitle>Teacher</PageTitle>
+
+<h1 class="mb-3">Teacher</h1>
+
+<p class="mb-3">Review imported exams and upload new XML batches.</p>
+
+<div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-primary" href="teacher/exams">Class exams</a>
+    <a class="btn btn-outline-primary" href="teacher/upload-exam-xml">Upload XML</a>
+</div>
