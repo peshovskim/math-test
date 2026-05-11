@@ -70,6 +70,7 @@ app.UseAntiforgery();
 
 app.MapAuthApi();
 app.MapTeacherExamEndpoints();
+app.MapStudentExamEndpoints();
 app.MapIntegrationEndpoints();
 
 app.MapRazorComponents<App>()

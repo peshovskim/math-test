@@ -1,0 +1,10 @@
+@page "/student"
+@attribute [Authorize(Roles = RoleNames.Student)]
+
+<PageTitle>Student</PageTitle>
+
+<h1 class="mb-3">Student</h1>
+
+<p class="mb-3">Review your graded exams and task-level results.</p>
+
+<a class="btn btn-primary" href="student/results">Open my exams</a>
