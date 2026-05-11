@@ -19,7 +19,7 @@ internal static class AuthApiEndpoints
 
         api.MapPost("/register", RegisterAsync).DisableAntiforgery();
         api.MapPost("/login", LoginAsync).DisableAntiforgery();
-        api.MapPost("/sign-out", SignOutAsync).DisableAntiforgery();
+        api.MapPost("/logout", LogoutAsync).DisableAntiforgery();
 
         return app;
     }
@@ -29,7 +29,7 @@ internal static class AuthApiEndpoints
         ISender mediator,
         CancellationToken cancellationToken)
     {
-        Result result = await mediator.Send(new RegisterUserCommand(request),cancellationToken);
+        Result result = await mediator.Send(new RegisterUserCommand(request), cancellationToken);
 
         return OkOrError(result);
     }
@@ -71,6 +71,13 @@ internal static class AuthApiEndpoints
         }
 
         return TypedResults.Ok(result.Value);
+    }
+
+    private static async Task LogoutAsync(HttpContext ctx)
+    {
+        await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        ctx.Response.Redirect("/");
     }
 
     private static async Task<(LoginUserRequest? Request, string? ReturnUrl)>
@@ -122,14 +129,6 @@ internal static class AuthApiEndpoints
         await httpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             principal);
-    }
-
-    private static async Task<IResult> SignOutAsync(HttpContext httpContext)
-    {
-        await httpContext.SignOutAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme);
-
-        return TypedResults.Redirect("/");
     }
 
     private static string SafeReturnUrl(string? returnUrl)
